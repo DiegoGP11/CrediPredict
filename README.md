@@ -1,9 +1,3 @@
-# 🚀 CrediPredict
-
-### 💳 Plataforma Inteligente de Evaluación Crediticia con Machine Learning
-
-CrediPredict es una plataforma desarrollada para automatizar el proceso de evaluación crediticia mediante técnicas de Machine Learning. El sistema permite procesar solicitudes de crédito, estimar el riesgo de incumplimiento y apoyar la toma de decisiones mediante una interfaz web intuitiva y automatizada.
-
 ---
 
 # 🎯 Objetivo del Proyecto
