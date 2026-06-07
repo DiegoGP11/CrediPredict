@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediPredict - Motor de Predicción ML</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-bg-animation">
+            <div class="floating-shape shape-1"></div><div class="floating-shape shape-2"></div><div class="floating-shape shape-3"></div>
+        </div>
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                    <h1>CrediPredict</h1><p>Motor de Predicción Crediticia con IA</p>
+                </div>
+                <form id="loginForm" class="login-form">
+                    <div class="input-group"><label><i class="fas fa-user"></i> Usuario</label><input type="text" id="username" placeholder="alumno1" autocomplete="off"></div>
+                    <div class="input-group"><label><i class="fas fa-lock"></i> Contraseña</label><div class="password-wrapper"><input type="password" id="password" placeholder="••••••••"><button type="button" class="toggle-password" onclick="togglePassword()"><i class="fas fa-eye" id="eyeIcon"></i></button></div></div>
+                    <div id="loginError" class="login-error"><i class="fas fa-exclamation-circle"></i><span>Usuario o contraseña incorrectos</span></div>
+                    <button type="submit" class="login-btn"><span>Iniciar Sesión</span><i class="fas fa-arrow-right"></i></button>
+                    <div class="login-footer"><p>© 2026 CrediPredict · Todos los derechos reservados</p><p class="secure-badge"><i class="fas fa-shield-alt"></i> Conexión Segura SSL</p></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardScreen" class="dashboard-screen hidden">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><i class="fas fa-brain"></i><span>CrediPredict</span></div>
+                <p class="sidebar-version">v3.2.1 · Modelo ML</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item" data-section="evaluaciones"><i class="fas fa-file-invoice-dollar"></i><span>Evaluaciones</span><span class="nav-badge" id="totalBadge">0</span></a>
+                <a href="#" class="nav-item" data-section="clientes"><i class="fas fa-users"></i><span>Clientes</span></a>
+                <a href="#" class="nav-item" data-section="contactados"><i class="fas fa-phone"></i><span>Contactados</span></a>
+                <a href="#" class="nav-item" data-section="analisis"><i class="fas fa-chart-line"></i><span>Análisis de Riesgo</span></a>
+                <a href="#" class="nav-item" data-section="reportes"><i class="fas fa-chart-bar"></i><span>Reportes</span></a>
+                <a href="#" class="nav-item" data-section="config"><i class="fas fa-cog"></i><span>Configuración</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info"><div class="user-avatar">A1</div><div class="user-details"><span class="user-name">Alumno 1</span><span class="user-role">Analista Crediticio</span></div></div>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="breadcrumb"><i class="fas fa-home"></i><span>/</span><span id="breadcrumbCurrent">Dashboard</span></div>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Buscar cliente, evaluación..." id="globalSearch"></div>
+                    <button class="topbar-btn" onclick="location.reload()" title="Refrescar"><i class="fas fa-sync-alt"></i></button>
+                    <div class="topbar-time" id="topbarTime">--:--:--</div>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- ======= DASHBOARD ======= -->
+                <section id="section-dashboard" class="content-section active">
+                    <div class="section-header">
+                        <div><h2>Panel de Control</h2><p>Resultados del modelo predictivo — filtrado por nivel de riesgo ML</p></div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Refrescar</button>
+                            <button class="btn btn-primary" onclick="document.getElementById('csvInput').click()"><i class="fas fa-file-import"></i> Importar CSV</button>
+                            <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(this)">
+                        </div>
+                    </div>
+
+                    <!-- KPIs -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card kpi-total"><div class="kpi-icon"><i class="fas fa-database"></i></div><div class="kpi-content"><span class="kpi-label">Total Predicciones</span><span class="kpi-value" id="kpiTotal">0</span><span class="kpi-change neutral"><i class="fas fa-microchip"></i> Procesados por ML</span></div></div>
+                        <div class="kpi-card kpi-approved"><div class="kpi-icon"><i class="fas fa-check-circle"></i></div><div class="kpi-content"><span class="kpi-label">Aprobados por Modelo</span><span class="kpi-value" id="kpiApproved">0</span><span class="kpi-change positive" id="kpiApprovedPct"><i class="fas fa-arrow-up"></i> 0%</span></div></div>
+                        <div class="kpi-card kpi-rejected"><div class="kpi-icon"><i class="fas fa-times-circle"></i></div><div class="kpi-content"><span class="kpi-label">Rechazados por Modelo</span><span class="kpi-value" id="kpiRejected">0</span><span class="kpi-change negative" id="kpiRejectedPct"><i class="fas fa-arrow-down"></i> 0%</span></div></div>
+                        <div class="kpi-card kpi-amount"><div class="kpi-icon"><i class="fas fa-shield-alt"></i></div><div class="kpi-content"><span class="kpi-label">Pérdida Evitada</span><span class="kpi-value" id="kpiAmount">S/ 0</span><span class="kpi-change positive"><i class="fas fa-arrow-up"></i> Por modelo ML</span></div></div>
+                        <div class="kpi-card kpi-risk"><div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="kpi-content"><span class="kpi-label">Prob. Incumplimiento Prom.</span><span class="kpi-value" id="kpiRisk">--%</span><span class="kpi-change neutral"><i class="fas fa-chart-line"></i> Score modelo</span></div></div>
+                        <div class="kpi-card kpi-capacity"><div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div><div class="kpi-content"><span class="kpi-label">Ingreso Proyectado</span><span class="kpi-value" id="kpiCapacity">S/ 0</span><span class="kpi-change positive"><i class="fas fa-arrow-up"></i> Cuotas aprobadas</span></div></div>
+                    </div>
+
+                    <!-- GRÁFICOS EN 3 COLUMNAS -->
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Distribución por Nivel de Riesgo</h3></div>
+                            <div class="chart-body">
+                                <div class="donut-chart-container">
+                                    <svg id="donutChart" viewBox="0 0 200 200"></svg>
+                                    <div class="donut-center">
+                                        <span class="donut-value" id="donutTotal">0</span>
+                                        <span class="donut-label">TOTAL</span>
+                                    </div>
+                                </div>
+                                <div class="chart-legend" id="riskLegend"></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Decisiones de Crédito</h3></div>
+                            <div class="chart-body">
+                                <div class="bar-chart" id="barChart"></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header"><h3><i class="fas fa-map-marker-alt"></i> Evaluaciones por Departamento</h3></div>
+                            <div class="chart-body">
+                                <div class="h-bar-chart" id="deptChart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ÚLTIMAS EVALUACIONES -->
+                    <div class="table-card">
+                        <div class="table-header"><h3><i class="fas fa-clock"></i> Últimas Evaluaciones</h3></div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>Cliente</th><th>Departamento</th><th>Monto</th><th>Prob. Pago</th><th>Decisión</th><th>Riesgo</th><th>Acciones</th></tr></thead>
+                                <tbody id="recentTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ======= EVALUACIONES ======= -->
+                <section id="section-evaluaciones" class="content-section">
+                    <div class="section-header">
+                        <div><h2>Registro de Evaluaciones</h2><p>Tabla completa con filtros y ordenamiento</p></div>
+                    </div>
+                    <div class="filters-bar">
+                        <div class="filter-group">
+                            <input type="text" id="tableSearch" placeholder="🔍 Buscar..." onkeyup="filterTable()" style="width:220px;">
+                            <select id="filterDecision" onchange="filterTable()"><option value="">Todas las decisiones</option><option value="APROBADO">✅ Aprobado</option><option value="RECHAZADO">❌ Rechazado</option></select>
+                            <select id="filterRisk" onchange="filterTable()">
+                                <option value="">Todos los riesgos</option>
+                                <option value="BAJO">🟢 Bajo</option>
+                                <option value="MEDIO">🟡 Medio</option>
+                                <option value="ALTO">🟠 Alto</option>
+                                <option value="MUY ALTO">🔴 Muy Alto</option>
+                            </select>
+                            <select id="filterSector" onchange="filterTable()"><option value="">Todos los sectores</option></select>
+                            <select id="filterDept" onchange="filterTable()"><option value="">Todos los departamentos</option></select>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header"><h3><i class="fas fa-table"></i> Registro de Evaluaciones</h3><span class="record-count" id="recordCount">0 registros</span></div>
+                        <div class="table-responsive"><table class="data-table" id="fullTable"><thead><tr>
+                            <th onclick="sortTable(0)">ID <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(1)">Cliente <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(2)">Departamento <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(3)">Educación <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(4)">Empleo <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(5)">Sector <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(6)">Ingreso <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(7)">Motivo <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(8)">Monto <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(9)">Plazo <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(10)">Cuota <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(11)">Cap. Pago <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(12)">Endeud. <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(13)">Prob. Inc. <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(14)">Prob. Pago <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(15)">Decisión <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(16)">Riesgo <i class="fas fa-sort"></i></th>
+                            <th>Acciones</th>
+                        </tr></thead><tbody id="fullTableBody"></tbody></table></div>
+                        <div class="table-footer"><div class="pagination" id="pagination"></div></div>
+                    </div>
+                </section>
+
+                <!-- ======= CLIENTES ======= -->
+                <section id="section-clientes" class="content-section">
+                    <div class="section-header"><div><h2>Gestión de Clientes</h2><p>Información detallada de cada cliente evaluado</p></div></div>
+                    <div class="clients-grid" id="clientsGrid"></div>
+                </section>
+
+                <!-- ======= CONTACTADOS ======= -->
+                <section id="section-contactados" class="content-section">
+                    <div class="section-header">
+                        <div><h2>Clientes Contactados</h2><p>Seguimiento de propuestas enviadas</p></div>
+                        <div class="section-actions"><button class="btn" onclick="exportContactados()"><i class="fas fa-download"></i> Exportar</button></div>
+                    </div>
+                    <div class="kpi-grid" style="margin-bottom:20px;">
+                        <div class="kpi-card kpi-total"><div class="kpi-icon"><i class="fas fa-phone"></i></div><div class="kpi-content"><span class="kpi-label">Total Contactados</span><span class="kpi-value" id="kpiContactados">0</span></div></div>
+                        <div class="kpi-card kpi-approved"><div class="kpi-icon"><i class="fas fa-check-circle"></i></div><div class="kpi-content"><span class="kpi-label">Aceptaron</span><span class="kpi-value" id="kpiAceptaron">0</span><span class="kpi-change positive" id="pctAceptacion">0%</span></div></div>
+                        <div class="kpi-card kpi-rejected"><div class="kpi-icon"><i class="fas fa-times-circle"></i></div><div class="kpi-content"><span class="kpi-label">Rechazaron</span><span class="kpi-value" id="kpiRechazaron">0</span></div></div>
+                        <div class="kpi-card kpi-capacity"><div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div><div class="kpi-content"><span class="kpi-label">Pendientes</span><span class="kpi-value" id="kpiPendientes">0</span></div></div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header"><h3><i class="fas fa-phone"></i> Seguimiento</h3></div>
+                        <div class="table-responsive"><table class="data-table"><thead><tr><th>Cliente</th><th>Monto</th><th>Contactado</th><th>Propuesta</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody id="contactadosTableBody"></tbody></table></div>
+                    </div>
+                </section>
+
+                <!-- ======= ANÁLISIS ======= -->
+                <section id="section-analisis" class="content-section">
+                    <div class="section-header"><div><h2>Análisis de Riesgo</h2><p>Métricas avanzadas y análisis predictivo</p></div></div>
+                    <div class="analysis-grid">
+                        <div class="analysis-card"><h3><i class="fas fa-percentage"></i> Endeudamiento</h3><div class="analysis-chart" id="endeudChart"></div></div>
+                        <div class="analysis-card"><h3><i class="fas fa-balance-scale"></i> Capacidad vs Ingreso</h3><div class="analysis-chart" id="capacidadChart"></div></div>
+                        <div class="analysis-card"><h3><i class="fas fa-calendar-alt"></i> Plazos</h3><div class="analysis-chart" id="plazoChart"></div></div>
+                        <div class="analysis-card"><h3><i class="fas fa-briefcase"></i> Tipo de Empleo</h3><div class="analysis-chart" id="empleoChart"></div></div>
+                    </div>
+                </section>
+
+                <!-- ======= REPORTES ======= -->
+                <section id="section-reportes" class="content-section">
+                    <div class="section-header"><div><h2>Reportes</h2><p>Resumen estadístico del modelo</p></div></div>
+                    <div class="reports-grid">
+                        <div class="report-card"><h3><i class="fas fa-robot"></i> Resumen del Modelo ML</h3><div id="financialSummary"></div></div>
+                        <div class="report-card"><h3><i class="fas fa-graduation-cap"></i> Nivel Educativo</h3><div id="educationSummary"></div></div>
+                        <div class="report-card"><h3><i class="fas fa-venus-mars"></i> Género</h3><div id="genderSummary"></div></div>
+                        <div class="report-card"><h3><i class="fas fa-tags"></i> Loan Grade / Motivo</h3><div id="motivoSummary"></div></div>
+                    </div>
+                </section>
+
+                <!-- ======= CONFIGURACIÓN ======= -->
+                <section id="section-config" class="content-section">
+                    <div class="section-header"><div><h2>Configuración</h2><p>Parámetros del sistema</p></div></div>
+                    <div class="config-grid">
+                        <div class="config-card"><h3><i class="fas fa-user-cog"></i> Perfil</h3><div class="config-form"><div class="form-group"><label>Usuario</label><input type="text" value="alumno1" readonly></div><div class="form-group"><label>Rol</label><input type="text" value="Analista Crediticio" readonly></div><div class="form-group"><label>Último Acceso</label><input type="text" id="lastAccess" readonly></div></div></div>
+                        <div class="config-card"><h3><i class="fas fa-database"></i> Sistema</h3><div class="system-info"><div class="info-row"><span>Versión:</span><span>v3.2.1</span></div><div class="info-row"><span>Motor:</span><span>ML / CSV</span></div><div class="info-row"><span>Registros:</span><span id="configRecords">0</span></div><div class="info-row"><span>Estado:</span><span class="status-online"><i class="fas fa-circle"></i> En Línea</span></div></div></div>
+                        <div class="config-card">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Umbrales del Modelo</h3>
+                            <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Segmentación basada en <code style="color:var(--accent)">prob_incumplimiento</code> — función <code style="color:var(--accent)">nivel_riesgo(prob)</code> del modelo .pkl</p>
+                            <div class="thresholds">
+                                <div class="threshold-item"><div class="threshold-label"><span style="color:#00c853">🟢 BAJO</span><span>prob &lt; 20%</span></div><div class="threshold-bar"><div class="threshold-fill" style="width:20%;background:#00c853;"></div></div><p class="threshold-desc">Cliente fiable. Aprobación directa recomendada.</p></div>
+                                <div class="threshold-item"><div class="threshold-label"><span style="color:#ffab00">🟡 MEDIO</span><span>20% ≤ prob &lt; 50%</span></div><div class="threshold-bar"><div class="threshold-fill" style="width:50%;background:#ffab00;"></div></div><p class="threshold-desc">Riesgo moderado. Evaluar capacidad de pago.</p></div>
+                                <div class="threshold-item"><div class="threshold-label"><span style="color:#ff6d00">🟠 ALTO</span><span>50% ≤ prob &lt; 75%</span></div><div class="threshold-bar"><div class="threshold-fill" style="width:75%;background:#ff6d00;"></div></div><p class="threshold-desc">Alto riesgo de no pago. Requiere revisión manual.</p></div>
+                                <div class="threshold-item"><div class="threshold-label"><span style="color:#ff1744">🔴 MUY ALTO</span><span>prob ≥ 75%</span></div><div class="threshold-bar"><div class="threshold-fill" style="width:100%;background:#ff1744;"></div></div><p class="threshold-desc">Probabilidad muy elevada de incumplimiento. Rechazo automático.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODAL -->
+                <div id="detailModal" class="modal-overlay hidden"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-user-circle"></i> Detalle del Cliente</h3><button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"><div class="spinner-ring"></div><div class="spinner-ring"></div><div class="spinner-ring"></div></div>
+            <h3>📊 Procesando datos...</h3><p id="loadingText">Cargando archivo CSV</p>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <p class="loading-stats" id="loadingStats">0 registros procesados</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

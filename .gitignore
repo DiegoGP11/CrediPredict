@@ -1,0 +1,25 @@
+# Carpetas de compilación
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
+# Archivos temporales
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Entornos virtuales
+venv/
+.env
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
