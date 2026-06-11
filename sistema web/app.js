@@ -614,3 +614,10 @@ if(gs) gs.addEventListener('input', function(){
 });
 
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+
+// ==================== LOGIN AUTOMÁTICO ====================
+window.addEventListener('load', () => {
+    document.getElementById('username').value = 'alumno1';
+    document.getElementById('password').value = '12345678';
+});
