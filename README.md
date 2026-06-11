@@ -184,12 +184,11 @@ El script de predicción está diseñado para ejecutarse en **Visual Studio Code
 ### 📋 Pasos
 
 1. Clona el repositorio o descarga el proyecto
-2. Descarga el dataset desde el enlace **DATA_FINAL** de Google Drive y colócalo en la carpeta `DATA_FINAL`
-3. Descarga el modelo `modelo_riesgo_crediticio_xgb_V2.pkl` desde el enlace **BancoData** y colócalo en la carpeta `NOTEBOOK`
+2. Ingresar a la carpeta **BANCO_DATA** y descargar el archivo `dataset_creditos.csv` de Google Drive y crea una carpeta `DATA_FINAL` dentro de los archivos antes descargados en local y pegar ahi el csv anteriormente mencionado.
+3. Hacer los mismo con **DATA_FINAL**, descargar `resultado_predicciones` y crear una carpeta con el nombre **RESULTADO_FINAL** donde se colocara el csv descargado.
 4. Abre la carpeta `NOTEBOOK` en Visual Studio Code
 5. Abre el archivo `predecir_creditos.py` y verifica que las rutas al inicio del script apunten correctamente a tus archivos
-
-7. El resultado se guardará automáticamente en `DATA_FINAL/resultado_predicciones.csv` listo para ser consumido por la web
+6. El resultado se guardará automáticamente en `DATA_FINAL/resultado_predicciones.csv` listo para ser consumido por la web
 
 ---
 
