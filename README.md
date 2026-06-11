@@ -95,29 +95,28 @@ Aplicación Web (HTML)
 CrediPredict
 │
 ├── 📂 BancoData
-│       └── Dataset histórico usado para entrenamiento del modelo
+│       └── Descargar TABLA_FINAL (dataset_creditos.csv)
 │
 ├── 📂 DATA_FINAL
-│       └── Dataset final procesado con predicciones generadas
+│       └── Descargar DATA_FINAL (resultado_predicciones.csv)
 │
 ├── 📂 ETL
 │       └── Procesos SSIS para integración con SQL Server
 │
 ├── 📂 NOTEBOOK
-│       ├── Modelo.ipynb                              
-│       ├── modelo_riesgo_crediticio_xgb_V2.pkl      
-│       └── predecir_creditos.py                   
+│       ├── descargar_datos.ipynb
+│       ├── Modelo.ipynb
+│       ├── modelo_riesgo_crediticio_xgb_V2.pkl
+│       └── prediccion_credito.ipynb              
 │
 ├── 📂 sistema web
-│       ├── css
-│       ├── js
-│       ├── assets
-│       └── html
+│       ├── Css
+│       ├── Js
+│       └── Html
 │
 └── 📂 SQL
         ├── Scripts de creación
-        ├── Procedimientos almacenados
-        └── Consultas
+        └── Procedimientos almacenados
 ```
 
 ---
@@ -132,7 +131,6 @@ El proceso completo de construcción del modelo fue desarrollado en un Notebook 
 * Limpieza y transformación de datos
 * Ingeniería y selección de variables
 * División de datos Train/Test
-* Entrenamiento de múltiples algoritmos
 * Comparación de desempeño
 * Optimización de umbral
 * Evaluación de métricas
@@ -144,7 +142,7 @@ El proceso completo de construcción del modelo fue desarrollado en un Notebook 
 * Random Forest
 * AdaBoost
 * Gradient Boosting
-* XGBoost ✅ *(modelo ganador — AUC-ROC: 0.9029)*
+* XGBoost 
 
 ### 📈 Métricas Utilizadas
 
@@ -175,7 +173,7 @@ Dataset final procesado utilizado para generar predicciones y resultados.
 
 Contiene todo el proceso de construcción del modelo de Machine Learning, incluyendo EDA, limpieza de datos, entrenamiento, evaluación y exportación del modelo final.
 
-📂 Ubicación: `NOTEBOOK/Modelo.ipynb`
+📂 Ubicación: data/NOTEBOOK/
 
 ---
 
