@@ -30,7 +30,7 @@ Desarrollar una solución inteligente capaz de evaluar solicitudes crediticias u
 ### 🌐 Desarrollo Web
 
 * HTML5
-* CSS3
+* CSS
 * JavaScript
 
 ### 🔧 Control de Versiones
