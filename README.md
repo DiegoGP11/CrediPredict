@@ -107,7 +107,11 @@ CrediPredict
 │       ├── descargar_datos.ipynb
 │       ├── Modelo.ipynb
 │       ├── modelo_riesgo_crediticio_xgb_V2.pkl
-│       └── prediccion_credito.ipynb              
+│       ├── prediccion_credito.py
+│       └── pipeline.py                            ← automatiza todo el proceso
+│
+├── 📂 RESULTADO_FINAL
+│       └── resultado_predicciones.csv             ← generado automáticamente
 │
 ├── 📂 sistema web
 │       ├── Css
@@ -142,7 +146,7 @@ El proceso completo de construcción del modelo fue desarrollado en un Notebook 
 * Random Forest
 * AdaBoost
 * Gradient Boosting
-* XGBoost 
+* XGBoost ✅ *(modelo ganador — AUC-ROC: 0.9029)*
 
 ### 📈 Métricas Utilizadas
 
@@ -173,22 +177,56 @@ Dataset final procesado utilizado para generar predicciones y resultados.
 
 Contiene todo el proceso de construcción del modelo de Machine Learning, incluyendo EDA, limpieza de datos, entrenamiento, evaluación y exportación del modelo final.
 
-📂 Ubicación: data/NOTEBOOK/
+📂 Ubicación: `NOTEBOOK/Modelo.ipynb`
 
 ---
 
 # 💻 Ejecución Local
 
-El script de predicción está diseñado para ejecutarse en **Visual Studio Code**.
+El sistema está diseñado para ejecutarse en local con **Visual Studio Code**.
+
+### 📋 Pasos manuales
+
+1. Clona el repositorio o descarga el proyecto
+2. Ingresar a la carpeta **BANCO_DATA** y descargar el archivo `dataset_creditos.csv` de Google Drive y crear una carpeta `DATA_FINAL` dentro de los archivos descargados en local y pegar ahí el csv anteriormente mencionado
+3. Hacer lo mismo con **DATA_FINAL**, descargar `resultado_predicciones` y crear una carpeta con el nombre **RESULTADO_FINAL** donde se colocará el csv descargado
+4. Abre la carpeta `NOTEBOOK` en Visual Studio Code
+5. Abre el archivo `prediccion_credito.py` y verifica que las rutas al inicio del script apunten correctamente a tus archivos
+6. El resultado se guardará automáticamente en `RESULTADO_FINAL/resultado_predicciones.csv` listo para ser consumido por la web
+
+---
+
+# ⚡ Ejecución con Pipeline Automatizado
+
+Como alternativa a los pasos manuales, el proyecto incluye un **pipeline automatizado** que ejecuta todo el proceso con un solo comando.
+
+### ¿Qué hace el pipeline?
+
+```text
+pipeline.py
+    ↓
+1. Crea automáticamente las carpetas DATA_FINAL y RESULTADO_FINAL
+2. Descarga dataset_creditos.csv desde Google Drive
+3. Verifica que el modelo .pkl esté disponible en NOTEBOOK
+4. Ejecuta prediccion_credito.py → genera resultado_predicciones.csv
+5. Abre el sistema web (index.html) en el navegador
+```
 
 ### 📋 Pasos
 
 1. Clona el repositorio o descarga el proyecto
-2. Ingresar a la carpeta **BANCO_DATA** y descargar el archivo `dataset_creditos.csv` de Google Drive y crea una carpeta `DATA_FINAL` dentro de los archivos antes descargados en local y pegar ahi el csv anteriormente mencionado.
-3. Hacer los mismo con **DATA_FINAL**, descargar `resultado_predicciones` y crear una carpeta con el nombre **RESULTADO_FINAL** donde se colocara el csv descargado.
-4. Abre la carpeta `NOTEBOOK` en Visual Studio Code
-5. Abre el archivo `predecir_creditos.py` y verifica que las rutas al inicio del script apunten correctamente a tus archivos
-6. El resultado se guardará automáticamente en `DATA_FINAL/resultado_predicciones.csv` listo para ser consumido por la web
+2. Abre una terminal en la carpeta `NOTEBOOK`
+3. Ejecuta el pipeline:
+
+```bash
+python pipeline.py
+```
+
+4. El sistema descargará la data, generará las predicciones y abrirá el sistema web automáticamente
+5. En el sistema web, las credenciales ya están pre-cargadas, solo haz click en **Iniciar Sesión**
+6. Haz click en **Importar CSV** y selecciona `resultado_predicciones.csv` desde la carpeta `RESULTADO_FINAL`
+
+> **Nota:** La primera vez que se ejecute, el pipeline instalará automáticamente `gdown` si no está disponible en el entorno.
 
 ---
 
@@ -220,7 +258,11 @@ La plataforma permite visualizar:
 
 ✅ Predicción de riesgo mediante Machine Learning
 
+✅ Pipeline automatizado de extremo a extremo
+
 ✅ Generación automática de resultados
+
+✅ Interfaz web moderna e intuitiva
 
 ✅ Arquitectura escalable
 
