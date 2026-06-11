@@ -2,15 +2,33 @@ import pandas as pd
 import joblib
 import os
 import warnings
+from pathlib import Path
 warnings.filterwarnings('ignore')
 
+# ─────────────────────────────────────────────────────────────
+# RUTAS DINÁMICAS — funcionan en cualquier PC automáticamente
+# Estructura esperada:
+#   CrediPredict-main/
+#       ├── DATA_FINAL/            
+#       ├── NOTEBOOK/          
+#       └── RESULTADO_FINAL/   
+# ─────────────────────────────────────────────────────────────
+BASE     = Path(__file__).resolve().parent.parent   # sube a CrediPredict-main/
+RUTA_CSV = BASE / "DATA_FINAL"    / "dataset_creditos.csv"
+RUTA_PKL = BASE / "NOTEBOOK"     / "modelo_riesgo_crediticio_xgb_V2.pkl"
+RUTA_OUT = BASE / "RESULTADO_FINAL" / "resultado_predicciones.csv"
+
+# Crear carpeta RESULTADO_FINAL si no existe
+RUTA_OUT.parent.mkdir(parents=True, exist_ok=True)
 
 # ─────────────────────────────────────────────────────────────
-# RUTAS — ajusta solo aquí
+# VALIDACIÓN — avisa si falta algún archivo antes de continuar
 # ─────────────────────────────────────────────────────────────
-RUTA_CSV = r"C:\Users\diego\Desktop\PROYECTO INTEGRADOR\data\dataset_creditos.csv"
-RUTA_PKL = r"C:\Users\diego\Desktop\PROYECTO INTEGRADOR\NOTEBOOK\modelo_riesgo_crediticio_xgb_V2.pkl"
-RUTA_OUT = r"C:\Users\diego\Desktop\PROYECTO INTEGRADOR\data\resultado_predicciones.csv"
+if not RUTA_CSV.exists():
+    raise FileNotFoundError(f"No se encontró el dataset en:\n  {RUTA_CSV}\nDescárgalo desde Google Drive y colócalo en la carpeta DATA_FINAL.")
+
+if not RUTA_PKL.exists():
+    raise FileNotFoundError(f"No se encontró el modelo en:\n  {RUTA_PKL}\nVerifica que el archivo .pkl esté en la carpeta NOTEBOOK.")
 
 # ─────────────────────────────────────────────────────────────
 # 1. CARGAR DATOS Y MODELO
@@ -31,7 +49,6 @@ print(f"  ✓ Datos cargados     → {len(df):,} registros")
 print(f"  ✓ Modelo cargado     → XGBoost")
 print(f"  ✓ Umbral del modelo  → {UMBRAL}")
 print(f"  ✓ Columnas esperadas → {len(columnas)}")
-print(f"  ✓ Columnas: {columnas}")
 
 # ─────────────────────────────────────────────────────────────
 # 2. PREPARAR VARIABLES PARA EL MODELO
@@ -39,24 +56,24 @@ print(f"  ✓ Columnas: {columnas}")
 print("\n[2/4] Preparando variables...")
 
 # Estandarizar valores categóricos
-df["person_home_ownership"] = df["person_home_ownership"].str.upper().str.strip()
-df["loan_intent"]           = df["loan_intent"].str.upper().str.strip()
+df["person_home_ownership"]     = df["person_home_ownership"].str.upper().str.strip()
+df["loan_intent"]               = df["loan_intent"].str.upper().str.strip()
 df["cb_person_default_on_file"] = df["cb_person_default_on_file"].str.upper().str.strip()
 
-# ── OneHotEncoding SOLO de las 3 variables que usó el modelo ──
-# EXCLUIR loan_grade y loan_int_rate — fueron eliminadas por data leakage
+# OneHotEncoding solo de las 3 variables que usó el modelo
+# EXCLUIR loan_grade y loan_int_rate — eliminadas por data leakage
 dummies = pd.get_dummies(df[[
     "person_home_ownership",
     "loan_intent",
     "cb_person_default_on_file"
 ]], prefix={
-    "person_home_ownership":    "person_home_ownership",
-    "loan_intent":              "loan_intent",
+    "person_home_ownership":     "person_home_ownership",
+    "loan_intent":               "loan_intent",
     "cb_person_default_on_file": "cb_person_default_on_file"
 })
 
-# ── Variables numéricas que sí usa el modelo ──
-# EXCLUIR loan_int_rate (data leakage) y person_age (no está en VARIABLES del pkl)
+# Variables numéricas que sí usa el modelo
+# EXCLUIR loan_int_rate (data leakage) y person_age (no está en variables del pkl)
 numericas = df[[
     "person_income",
     "person_emp_length",
@@ -65,11 +82,8 @@ numericas = df[[
     "cb_person_cred_hist_length"
 ]]
 
-# Unir todo
+# Unir y alinear exactamente con las columnas del modelo entrenado
 X = pd.concat([numericas, dummies], axis=1)
-
-# Alinear exactamente con las columnas del modelo entrenado
-# (agrega columnas faltantes con 0, elimina sobrantes)
 X = X.reindex(columns=columnas, fill_value=0)
 
 print(f"  ✓ Variables preparadas → {X.shape[1]} columnas")
@@ -80,8 +94,8 @@ print(f"  ✓ Columnas nulas: {X.isnull().sum().sum()}")
 # ─────────────────────────────────────────────────────────────
 print("\n[3/4] Ejecutando predicción...")
 
-# Usar predict_proba + umbral calibrado (igual que en el notebook)
-probabilidades = modelo.predict_proba(X)[:, 1]   # prob de incumplimiento
+# predict_proba + umbral calibrado (igual que en el notebook de entrenamiento)
+probabilidades = modelo.predict_proba(X)[:, 1]
 predicciones   = (probabilidades >= UMBRAL).astype(int)
 
 print(f"  ✓ Predicciones realizadas → {len(predicciones):,} clientes")
@@ -99,8 +113,7 @@ resultado = df[[
     "nivel_educacion", "departamento",
     # Laboral
     "tipo_empleo", "nombre_empresa", "sector",
-    "person_income",
-    "situacion_laboral",
+    "person_income", "situacion_laboral",
     # Crédito
     "motivo_credito", "loan_amnt",
     "plazo_meses", "cuota_mensual_estimada",
@@ -123,14 +136,9 @@ resultado["DECISION"] = resultado["DECISION"].apply(
     lambda x: "APROBADO" if x == 0 else "RECHAZADO"
 )
 
-# Nivel de riesgo
-def nivel_riesgo(prob):
-    if prob < 20:   return "BAJO"
-    elif prob < 50: return "MEDIO"
-    elif prob < 75: return "ALTO"
-    else:           return "MUY ALTO"
-
-# # El modelo XGBoost retorna un valor entre 0 y 1 por cliente.
+# ─────────────────────────────────────────────────────────────
+# NIVEL DE RIESGO — basado en probabilidad de incumplimiento
+# El modelo XGBoost retorna un valor entre 0 y 1 por cliente.
 # Se clasifica según rangos estándar de la industria financiera:
 #   BAJO     (< 20%) → cliente casi seguro, probabilidad mínima de impago
 #   MEDIO    (20-50%) → zona gris, riesgo manejable, banco puede aprobar con condiciones
@@ -139,6 +147,11 @@ def nivel_riesgo(prob):
 # Nota: con umbral 0.31, todo cliente con prob >= 31% ya es RECHAZADO,
 # pero igual se etiqueta el nivel para tener el dato completo en la tabla.
 # ─────────────────────────────────────────────────────────────
+def nivel_riesgo(prob):
+    if prob < 20:   return "BAJO"
+    elif prob < 50: return "MEDIO"
+    elif prob < 75: return "ALTO"
+    else:           return "MUY ALTO"
 
 resultado["NIVEL_RIESGO"] = resultado["prob_incumplimiento"].apply(nivel_riesgo)
 
