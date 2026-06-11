@@ -185,7 +185,6 @@ La plataforma permite visualizar:
 * Riesgo de incumplimiento
 * Ingresos proyectados
 * Distribución de niveles de riesgo
-* Historial de predicciones
 
 ---
 
