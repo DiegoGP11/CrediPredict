@@ -2,7 +2,7 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║             CREDIPREDICT — PIPELINE AUTOMATIZADO             ║
 ║                                                              ║
-║  Ejecuta todo el proceso con un solo comando:                ║
+║  Ejecutara todo el proceso desde aqui,:                      ║
 ║    1. Descarga el dataset desde Google Drive                 ║
 ║    2. Crea las carpetas necesarias                           ║
 ║    3. Genera las predicciones con el modelo XGBoost          ║
