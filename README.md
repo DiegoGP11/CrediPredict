@@ -1,3 +1,9 @@
+# 🚀 CrediPredict
+
+### 💳 Plataforma Inteligente de Evaluación Crediticia con Machine Learning
+
+CrediPredict es una plataforma desarrollada para automatizar el proceso de evaluación crediticia mediante técnicas de Machine Learning. El sistema permite procesar solicitudes de crédito, estimar el riesgo de incumplimiento y apoyar la toma de decisiones mediante una interfaz web intuitiva y automatizada.
+
 ---
 
 # 🎯 Objetivo del Proyecto
@@ -30,7 +36,7 @@ Desarrollar una solución inteligente capaz de evaluar solicitudes crediticias u
 ### 🌐 Desarrollo Web
 
 * HTML5
-* CSS
+* CSS3
 * JavaScript
 
 ### 🔧 Control de Versiones
@@ -69,7 +75,7 @@ Desarrollo del Modelo ML
 └── Exportación del mejor modelo (.pkl)
         ↓
 Python Script (Producción)
-├── Extrae datos desde SQL Server
+├── Carga dataset desde DATA_FINAL
 ├── Limpia y transforma datos
 ├── Carga modelo (.pkl)
 ├── Genera predicciones
@@ -79,6 +85,39 @@ Aplicación Web (HTML)
 ├── Consulta resultados
 ├── Muestra aprobados/rechazados
 └── Permite ejecutar el proceso
+```
+
+---
+
+# 📁 Estructura del Proyecto
+
+```text
+CrediPredict
+│
+├── 📂 BancoData
+│       └── Dataset histórico usado para entrenamiento del modelo
+│
+├── 📂 DATA_FINAL
+│       └── Dataset final procesado con predicciones generadas
+│
+├── 📂 ETL
+│       └── Procesos SSIS para integración con SQL Server
+│
+├── 📂 NOTEBOOK
+│       ├── Modelo.ipynb                              
+│       ├── modelo_riesgo_crediticio_xgb_V2.pkl      
+│       └── predecir_creditos.py                   
+│
+├── 📂 sistema web
+│       ├── css
+│       ├── js
+│       ├── assets
+│       └── html
+│
+└── 📂 SQL
+        ├── Scripts de creación
+        ├── Procedimientos almacenados
+        └── Consultas
 ```
 
 ---
@@ -105,7 +144,7 @@ El proceso completo de construcción del modelo fue desarrollado en un Notebook 
 * Random Forest
 * AdaBoost
 * Gradient Boosting
-* XGBoost
+* XGBoost ✅ *(modelo ganador — AUC-ROC: 0.9029)*
 
 ### 📈 Métricas Utilizadas
 
@@ -113,34 +152,6 @@ El proceso completo de construcción del modelo fue desarrollado en un Notebook 
 * Precision
 * Recall
 * F1-Score
-
----
-
-# 📁 Estructura del Proyecto
-
-```text
-PROYECTO INTEGRADOR
-│
-├── 📂 NOTEBOOK
-│       ├── descargar_datos.ipynb
-│       ├── Modelo.ipynb
-│       ├── modelo_riesgo_crediticio_xgb_V2.pkl
-│       └── prediccion_credito.ipynb
-│
-├── 📂 ETL
-│   └── Procesos SSIS
-│
-├── 📂 sistema web
-│   ├── css
-│   ├── js
-│   ├── assets
-│   └── html
-│
-└── 📂 SQL
-    ├── Scripts de creación
-    ├── Procedimientos almacenados
-    └── Consultas
-```
 
 ---
 
@@ -164,8 +175,23 @@ Dataset final procesado utilizado para generar predicciones y resultados.
 
 Contiene todo el proceso de construcción del modelo de Machine Learning, incluyendo EDA, limpieza de datos, entrenamiento, evaluación y exportación del modelo final.
 
-📂 Ubicación:
-data/NOTEBOOK/
+📂 Ubicación: `NOTEBOOK/Modelo.ipynb`
+
+---
+
+# 💻 Ejecución Local
+
+El script de predicción está diseñado para ejecutarse en **Visual Studio Code**.
+
+### 📋 Pasos
+
+1. Clona el repositorio o descarga el proyecto
+2. Descarga el dataset desde el enlace **DATA_FINAL** de Google Drive y colócalo en la carpeta `DATA_FINAL`
+3. Descarga el modelo `modelo_riesgo_crediticio_xgb_V2.pkl` desde el enlace **BancoData** y colócalo en la carpeta `NOTEBOOK`
+4. Abre la carpeta `NOTEBOOK` en Visual Studio Code
+5. Abre el archivo `predecir_creditos.py` y verifica que las rutas al inicio del script apunten correctamente a tus archivos
+
+7. El resultado se guardará automáticamente en `DATA_FINAL/resultado_predicciones.csv` listo para ser consumido por la web
 
 ---
 
@@ -185,6 +211,7 @@ La plataforma permite visualizar:
 * Riesgo de incumplimiento
 * Ingresos proyectados
 * Distribución de niveles de riesgo
+* Historial de predicciones
 
 ---
 
@@ -196,11 +223,7 @@ La plataforma permite visualizar:
 
 ✅ Predicción de riesgo mediante Machine Learning
 
-✅ Integración con SQL Server
-
 ✅ Generación automática de resultados
-
-✅ Interfaz web moderna e intuitiva
 
 ✅ Arquitectura escalable
 
